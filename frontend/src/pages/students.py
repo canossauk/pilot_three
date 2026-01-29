@@ -1,13 +1,26 @@
+# 
+#  Import LIBRARIES
 import flet as ft
+#  Import FILES
+
+
 try:
     from frontend.src.client import SchoolClient
 except ImportError:
     from client import SchoolClient
 
-# Color Palette (re-defined or imported if we had a shared constants file)
-COLOR_BURGUNDY = "#5D1535"
-COLOR_DARK = "#1A1A1A"
-COLOR_WHITE = "#FFFFFF"
+# Color Palette
+try:
+    from frontend.src.styles.colors import *
+except ImportError:
+    from styles.colors import *
+
+
+#  __________________________
+# #
+
+
+
 
 def create_students_view(page: ft.Page, client: SchoolClient):
     # State

@@ -1,7 +1,23 @@
+# 
+#  Import LIBRARIES
 import flet as ft
+#  Import FILES
 
-COLOR_BURGUNDY = "#5D1535"
-COLOR_DARK = "#1A1A1A"
+try:
+    from frontend.src.styles.colors import *
+except ImportError:
+    from styles.colors import *
+
+    
+#  __________________________
+# #
+
+
+
+try:
+    from frontend.src.styles.colors import *
+except ImportError:
+    from styles.colors import *
 
 def create_dashboard_content() -> ft.Container:
     return ft.Container(

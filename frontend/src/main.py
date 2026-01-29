@@ -1,4 +1,8 @@
+# 
+#  Import LIBRARIES
 import flet as ft
+#  Import FILES
+
 try:
     from frontend.src.client import SchoolClient
 except ImportError:
@@ -14,12 +18,17 @@ except ImportError:
     from pages.students import create_students_view
 # We can import others as needed or use placeholders for now
 
+
+#  __________________________
+# #
+
+
+
 # Color Palette
-COLOR_BURGUNDY = "#5D1535"
-COLOR_DARK = "#1A1A1A"
-COLOR_WHITE = "#FFFFFF"
-COLOR_BG = "#F5F5F7"
-COLOR_SURFACE = "#FFFFFF"
+try:
+    from frontend.src.styles.colors import *
+except ImportError:
+    from styles.colors import *
 
 async def main(page: ft.Page):
     page.title = "iLa - International Luxury Academy"
@@ -57,96 +66,30 @@ async def main(page: ft.Page):
             )
         page.update()
 
+    # --- Drawer ---
+    try:
+        from frontend.src.components.drawer import create_navigation_drawer
+    except ImportError:
+        from components.drawer import create_navigation_drawer
+
     def handle_drawer_change(e):
         selected_index = e.control.selected_index
         set_page(selected_index)
-        page.close_end_drawer()
+        # Close the drawer
+        page.end_drawer.open = False
+        page.update()
 
-    page.end_drawer = ft.NavigationDrawer(
-        on_change=handle_drawer_change,
-        selected_index=0,
-        controls=[
-            ft.Container(
-                content=ft.Text("iLa.", size=30, weight=ft.FontWeight.BOLD, color=COLOR_BURGUNDY, font_family="LuxurySerif"),
-                padding=ft.padding.only(left=20, top=20, bottom=20),
-            ),
-            ft.NavigationDrawerDestination(
-                icon=ft.Icons.DASHBOARD_OUTLINED, 
-                selected_icon=ft.Icons.DASHBOARD, 
-                label="Dashboard"
-            ),
-            ft.NavigationDrawerDestination(
-                icon=ft.Icons.SCHOOL_OUTLINED, 
-                selected_icon=ft.Icons.SCHOOL, 
-                label="Faculty"
-            ),
-            ft.NavigationDrawerDestination(
-                icon=ft.Icons.PEOPLE_OUTLINE, 
-                selected_icon=ft.Icons.PEOPLE, 
-                label="Students"
-            ),
-            ft.NavigationDrawerDestination(
-                icon=ft.Icons.ASSIGNMENT_IND_OUTLINED,
-                selected_icon=ft.Icons.ASSIGNMENT_IND, 
-                label="Staff"
-            ),
-            ft.NavigationDrawerDestination(
-                icon=ft.Icons.ATTACH_MONEY_OUTLINED, 
-                selected_icon=ft.Icons.ATTACH_MONEY, 
-                label="Finance"
-            ),
-            ft.NavigationDrawerDestination(
-                icon=ft.Icons.CONTACTS_OUTLINED, 
-                selected_icon=ft.Icons.CONTACTS, 
-                label="CRM"
-            ),
-        ],
-        indicator_color=ft.Colors.with_opacity(0.1, COLOR_BURGUNDY),
-    )
+    page.end_drawer = create_navigation_drawer(handle_drawer_change)
 
     def open_drawer(e):
         page.end_drawer.open = True
-        page.end_drawer.update()
+        page.update()
 
-    def create_header():
-        return ft.Container(
-            content=ft.Row(
-                controls=[
-                    ft.Text(
-                        "iLa.", 
-                        size=40, 
-                        weight=ft.FontWeight.BOLD, 
-                        color=COLOR_DARK,
-                        font_family="LuxurySerif"
-                    ),
-                    ft.VerticalDivider(width=20),
-                    ft.Text(
-                        "International Luxury Academy",
-                        size=16,
-                        color=COLOR_DARK,
-                        weight=ft.FontWeight.W_300
-                    ),
-                    ft.IconButton(
-                        icon=ft.Icons.MENU,
-                        icon_color=COLOR_WHITE,
-                        style=ft.ButtonStyle(
-                            bgcolor={"": COLOR_BURGUNDY},
-                            shape={"": ft.CircleBorder()},
-                            padding=15,
-                        ),
-                        on_click=open_drawer
-                    )
-                ],
-                alignment=ft.MainAxisAlignment.START,
-            ),
-            padding=ft.padding.symmetric(horizontal=40, vertical=20),
-            bgcolor=COLOR_WHITE,
-            shadow=ft.BoxShadow(
-                spread_radius=1,
-                blur_radius=10,
-                color=ft.Colors.with_opacity(0.1, ft.Colors.BLACK),
-            )
-        )
+    # --- Header ---
+    try:
+        from frontend.src.components.header import create_header
+    except ImportError:
+        from components.header import create_header
 
     # Layout Assembly
     hero_section = ft.Container(
@@ -162,7 +105,7 @@ async def main(page: ft.Page):
     page.add(
         ft.Column(
             [
-                create_header(),
+                create_header(open_drawer),
                 hero_section,
                 content_area
             ],
