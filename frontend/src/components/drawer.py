@@ -14,7 +14,8 @@ def _create_drawer_item(icon, text, index, on_click_func):
             spacing=20,
         ),
         padding=ft.Padding.symmetric(horizontal=20, vertical=15),
-        on_click=lambda e: on_click_func(index),
+        on_click=on_click_func,
+        data=index,
         ink=True,
     )
 

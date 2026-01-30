@@ -13,9 +13,17 @@ except ImportError:
 try:
     from frontend.src.pages.dashboard import create_dashboard_content
     from frontend.src.pages.students import create_students_view
+    from frontend.src.pages.faculty import create_faculty_content
+    from frontend.src.pages.staff import create_staff_content
+    from frontend.src.pages.finance import create_finance_content
+    from frontend.src.pages.crm import create_crm_content
 except ImportError:
     from pages.dashboard import create_dashboard_content
     from pages.students import create_students_view
+    from pages.faculty import create_faculty_content
+    from pages.staff import create_staff_content
+    from pages.finance import create_finance_content
+    from pages.crm import create_crm_content
 # We can import others as needed or use placeholders for now
 
 
@@ -50,8 +58,16 @@ async def main(page: ft.Page):
         content_area.content = None
         if index == 0: # Dashboard
             content_area.content = create_dashboard_content()
+        elif index == 1: # Faculty
+            content_area.content = create_faculty_content()
         elif index == 2: # Students
             content_area.content = create_students_view(page, client)
+        elif index == 3: # Staff
+            content_area.content = create_staff_content()
+        elif index == 4: # Finance
+            content_area.content = create_finance_content()
+        elif index == 5: # CRM
+            content_area.content = create_crm_content()
         else:
             # Placeholder for others
             content_area.content = ft.Container(
@@ -74,8 +90,9 @@ async def main(page: ft.Page):
 
     drawer_open = False
 
-    async def on_nav_selected(index):
+    async def on_nav_selected(e):
         nonlocal drawer_open
+        index = e.control.data
         set_page(index)
         # Close the drawer
         await page.close_end_drawer()

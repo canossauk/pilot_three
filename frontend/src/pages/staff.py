@@ -11,12 +11,11 @@ def create_staff_content() -> ft.Container:
     """
     return ft.Container(
         expand=True,
-        padding=20,
-        bgcolor=ft.Colors.BLUE_ACCENT_700,
+        padding=40,
         content=ft.Column(
             controls=[
-                ft.Text(value="Welcome to the Staff Page", theme_style=ft.TextThemeStyle.HEADLINE_MEDIUM),
-                ft.Text(value="Select an option from the navigation menu.", theme_style=ft.TextThemeStyle.BODY_LARGE),
+                ft.Text("Staff Administration", size=40, weight=ft.FontWeight.BOLD, color="#5D1535", font_family="LuxurySerif"),
+                ft.Text("Select an option from the navigation menu.", size=18, color="#1A1A1A"),
             ]
         ),
     )
