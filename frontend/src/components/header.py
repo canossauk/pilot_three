@@ -47,7 +47,7 @@ def create_header(on_click_menu) -> ft.Container:
             ],
             alignment=ft.MainAxisAlignment.START,
         ),
-        padding=ft.padding.symmetric(horizontal=40, vertical=20),
+        padding=ft.Padding.symmetric(horizontal=40, vertical=20),
         bgcolor=COLOR_WHITE,
         shadow=ft.BoxShadow(
             spread_radius=1,

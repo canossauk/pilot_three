@@ -72,17 +72,31 @@ async def main(page: ft.Page):
     except ImportError:
         from components.drawer import create_navigation_drawer
 
-    def handle_drawer_change(e):
-        selected_index = e.control.selected_index
-        set_page(selected_index)
+    drawer_open = False
+
+    async def on_nav_selected(index):
+        nonlocal drawer_open
+        set_page(index)
         # Close the drawer
-        page.end_drawer.open = False
+        await page.close_end_drawer()
+        drawer_open = False
         page.update()
 
-    page.end_drawer = create_navigation_drawer(handle_drawer_change)
+    def handle_drawer_dismiss(e):
+        nonlocal drawer_open
+        drawer_open = False
 
-    def open_drawer(e):
-        page.end_drawer.open = True
+    page.end_drawer = create_navigation_drawer(on_nav_selected)
+    page.end_drawer.on_dismiss = handle_drawer_dismiss
+
+    async def open_drawer(e):
+        nonlocal drawer_open
+        if drawer_open:
+            await page.close_end_drawer()
+            drawer_open = False
+        else:
+            await page.show_end_drawer()
+            drawer_open = True
         page.update()
 
     # --- Header ---
@@ -99,7 +113,7 @@ async def main(page: ft.Page):
                 ft.Text("Select a module from the menu to begin.", size=18, color=ft.Colors.GREY_700),
             ]
         ),
-        padding=ft.padding.only(left=80, top=60, bottom=40),
+        padding=ft.Padding.only(left=80, top=60, bottom=40),
     )
 
     page.add(
@@ -118,4 +132,5 @@ async def main(page: ft.Page):
     set_page(0)
 
 if __name__ == "__main__":
-    ft.app(target=main)
+    ft.run(main)
+    
