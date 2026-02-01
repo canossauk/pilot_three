@@ -130,20 +130,20 @@ async def main(page: ft.Page):
         target_content = None
 
         if current_user_role == "Admin":
-            if index == 0: target_content = create_dashboard_content() # Dashboard
+            if index == 0: target_content = create_dashboard_content(current_user_role) # Dashboard
             elif index == 1: target_content = None # Records Management
             elif index == 2: target_content = create_finance_content() # Bursar/Payments (Mapping to Finance for now)
             elif index == 3: target_content = None # Resource Allocation
 
         elif current_user_role == "Student":
-            if index == 0: target_content = create_dashboard_content() # Academic Dashboard
+            if index == 0: target_content = create_dashboard_content(current_user_role) # Academic Dashboard
             elif index == 1: target_content = None # Schedule
             elif index == 2: target_content = None # Assessment Tracker
             elif index == 3: target_content = None # Submission Engine
             elif index == 4: target_content = None # Registration
 
         elif current_user_role == "Tutor":
-            if index == 0: target_content = create_dashboard_content() # Dashboard
+            if index == 0: target_content = create_dashboard_content(current_user_role) # Dashboard
             elif index == 1: target_content = None # Attendance Module
             elif index == 2: target_content = None # Grading Suite
             elif index == 3: target_content = None # Curriculum Planner
@@ -154,7 +154,7 @@ async def main(page: ft.Page):
         else:
              # Placeholder for others
             content_area.content = ft.Container(
-                alignment=ft.alignment.center,
+                alignment=ft.Alignment.CENTER,
                 content=ft.Column(
                     [
                         ft.Icon(ft.Icons.CONSTRUCTION, size=50, color=ft.Colors.GREY_400),
