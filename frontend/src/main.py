@@ -54,33 +54,13 @@ async def main(page: ft.Page):
     # Main Content Area
     content_area = ft.Container(expand=True)
 
-    def set_page(index):
-        content_area.content = None
-        if index == 0: # Dashboard
-            content_area.content = create_dashboard_content()
-        elif index == 1: # Faculty
-            content_area.content = create_faculty_content()
-        elif index == 2: # Students
-            content_area.content = create_students_view(page, client)
-        elif index == 3: # Staff
-            content_area.content = create_staff_content()
-        elif index == 4: # Finance
-            content_area.content = create_finance_content()
-        elif index == 5: # CRM
-            content_area.content = create_crm_content()
-        else:
-            # Placeholder for others
-            content_area.content = ft.Container(
-                alignment=ft.alignment.center,
-                content=ft.Column(
-                    [
-                        ft.Icon(ft.Icons.CONSTRUCTION, size=50, color=ft.Colors.GREY_400),
-                        ft.Text("This module is under development.", color=ft.Colors.GREY_600)
-                    ],
-                    horizontal_alignment=ft.CrossAxisAlignment.CENTER
-                )
-            )
-        page.update()
+    # --- Login & Navigation Logic ---
+    current_user_role = None
+
+    try:
+        from frontend.src.pages.login import create_login_page
+    except ImportError:
+        from pages.login import create_login_page
 
     # --- Drawer ---
     try:
@@ -103,9 +83,6 @@ async def main(page: ft.Page):
         nonlocal drawer_open
         drawer_open = False
 
-    page.end_drawer = create_navigation_drawer(on_nav_selected)
-    page.end_drawer.on_dismiss = handle_drawer_dismiss
-
     async def open_drawer(e):
         nonlocal drawer_open
         if drawer_open:
@@ -122,19 +99,19 @@ async def main(page: ft.Page):
     except ImportError:
         from components.header import create_header
 
-    # Layout Assembly
-    hero_section = ft.Container(
-        content=ft.Column(
-            controls=[
-                ft.Text("Administration", size=60, font_family="LuxurySerif", color=COLOR_DARK),
-                ft.Text("Select a module from the menu to begin.", size=18, color=ft.Colors.GREY_700),
-            ]
-        ),
-        padding=ft.Padding.only(left=80, top=60, bottom=40),
-    )
+    # Layout Assembly for Authenticated View
+    def create_layout():
+        hero_section = ft.Container(
+            content=ft.Column(
+                controls=[
+                    ft.Text(f"{current_user_role} Portal", size=60, font_family="LuxurySerif", color=COLOR_DARK),
+                    ft.Text("Select a module from the menu to begin.", size=18, color=ft.Colors.GREY_700),
+                ]
+            ),
+            padding=ft.Padding.only(left=80, top=60, bottom=40),
+        )
 
-    page.add(
-        ft.Column(
+        return ft.Column(
             [
                 create_header(open_drawer),
                 hero_section,
@@ -143,10 +120,68 @@ async def main(page: ft.Page):
             scroll=ft.ScrollMode.AUTO,
             expand=True
         )
-    )
 
-    # Initialize with Dashboard
-    set_page(0)
+    def set_page(index):
+        content_area.content = None
+        
+        # Mapping based on Role and Index
+        # This is a basic mapping, for a real app we might want a configuration dict
+        
+        target_content = None
+
+        if current_user_role == "Admin":
+            if index == 0: target_content = create_dashboard_content() # Dashboard
+            elif index == 1: target_content = None # Records Management
+            elif index == 2: target_content = create_finance_content() # Bursar/Payments (Mapping to Finance for now)
+            elif index == 3: target_content = None # Resource Allocation
+
+        elif current_user_role == "Student":
+            if index == 0: target_content = create_dashboard_content() # Academic Dashboard
+            elif index == 1: target_content = None # Schedule
+            elif index == 2: target_content = None # Assessment Tracker
+            elif index == 3: target_content = None # Submission Engine
+            elif index == 4: target_content = None # Registration
+
+        elif current_user_role == "Tutor":
+            if index == 0: target_content = create_dashboard_content() # Dashboard
+            elif index == 1: target_content = None # Attendance Module
+            elif index == 2: target_content = None # Grading Suite
+            elif index == 3: target_content = None # Curriculum Planner
+            elif index == 4: target_content = create_students_view(page, client) # Student Overview (Mapping to Students)
+
+        if target_content:
+            content_area.content = target_content
+        else:
+             # Placeholder for others
+            content_area.content = ft.Container(
+                alignment=ft.alignment.center,
+                content=ft.Column(
+                    [
+                        ft.Icon(ft.Icons.CONSTRUCTION, size=50, color=ft.Colors.GREY_400),
+                        ft.Text("This module is under development.", color=ft.Colors.GREY_600)
+                    ],
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER
+                )
+            )
+        page.update()
+
+    def on_login_success(role):
+        nonlocal current_user_role
+        current_user_role = role
+        
+        # Re-initialize drawer with new role
+        page.end_drawer = create_navigation_drawer(on_nav_selected, user_role=role)
+        page.end_drawer.on_dismiss = handle_drawer_dismiss
+        
+        # Switch to main layout
+        page.clean()
+        page.add(create_layout())
+        
+        # Load default page (Dashboard)
+        set_page(0)
+
+    # Initial State: Login Page
+    page.add(create_login_page(on_login_success))
 
 if __name__ == "__main__":
     ft.run(main)

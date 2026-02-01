@@ -566,6 +566,13 @@ dependencies = [
     { name = "sqlmodel" },
 ]
 
+[package.dev-dependencies]
+dev = [
+    { name = "flet-cli" },
+    { name = "flet-desktop-light" },
+    { name = "flet-web" },
+]
+
 [package.metadata]
 requires-dist = [
     { name = "aiosqlite", specifier = ">=0.22.1" },
@@ -573,6 +580,13 @@ requires-dist = [
     { name = "flet", extras = ["all"], specifier = ">=0.80.4" },
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "sqlmodel", specifier = ">=0.0.31" },
+]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "flet-cli", specifier = ">=0.80.4" },
+    { name = "flet-desktop-light", specifier = ">=0.80.4" },
+    { name = "flet-web", specifier = ">=0.80.4" },
 ]
 
 [[package]]
